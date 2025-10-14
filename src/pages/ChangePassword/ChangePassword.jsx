@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import './ChangePassword.css';
 
@@ -195,14 +196,14 @@ const ChangePassword = ({ setCurrentPage }) => {
               Update Password
             </button>
 
-            <button
+            {/* <button
               type="button"
               onClick={() => setCurrentPage("login")}
               className="change-password-btn change-password-btn-secondary"
               disabled={isLoading}
             >
               Back to Login
-            </button>
+            </button> */}
           </div>
         </form>
       </div>
