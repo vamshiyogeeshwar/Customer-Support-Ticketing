@@ -3,22 +3,26 @@ import React, { useState } from "react";
 import "./CreateTicketModal.css";
 import ticketAPI from "../../services/api";
 
-const CreateTicketModal = ({ onClose, onTicketCreated }) => {
+const CreateTicketModal = ({ onClose, onTicketCreated, currentUserId }) => {
   const [requester, setRequester] = useState("");
   const [subject, setSubject] = useState("");
+  const [priority, setPriority] = useState("HIGH");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!requester || !subject) {
+    if (!subject) {
       setError("Please fill out all fields");
       return;
     }
 
     const ticketData = {
-      requester,
       subject,
+      priority,
+      status: "OPEN",          // default status for user-created ticket
+      requesterId: currentUserId, // current logged-in user's ID
+      assigneeId: 1, 
     };
 
     setLoading(true);
@@ -28,7 +32,7 @@ const CreateTicketModal = ({ onClose, onTicketCreated }) => {
       onClose();
     } catch (err) {
       console.error("Error creating ticket:", err);
-      setError("Failed to create ticket");
+      setError("Failed to create ticket.Please try again.");
     } finally {
       setLoading(false);
     }
@@ -40,22 +44,21 @@ const CreateTicketModal = ({ onClose, onTicketCreated }) => {
         <h2>Create Ticket</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Requester</label>
-            <input
-              type="text"
-              value={requester}
-              onChange={(e) => setRequester(e.target.value)}
-              placeholder="Enter requester name"
-            />
-          </div>
-
-          <div className="form-group">
             <label>Subject</label>
             <textarea
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               placeholder="Enter ticket subject or issue description"
             />
+          </div>
+
+          <div className="form-group">
+            <label>Priority</label>
+            <select value={priority} onChange={(e) => setPriority(e.target.value)}>
+              <option value="HIGH">HIGH</option>
+              <option value="MEDIUM">MEDIUM</option>
+              <option value="LOW">LOW</option>
+            </select>
           </div>
 
           {error && <p className="error">{error}</p>}
