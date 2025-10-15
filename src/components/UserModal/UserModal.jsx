@@ -1,7 +1,4 @@
 
-
-
-
 // src/components/UserModal/UserModal.jsx
 import React, { useState, useEffect } from 'react';
 import './UserModal.css';
@@ -54,8 +51,8 @@ const UserModal = ({ isOpen, onClose, onSave, userToEdit }) => {
           onChange={handleChange}
         />
         <select name="role" value={formData.role} onChange={handleChange}>
-          <option value="Support">Support</option>
-          <option value="User">User</option>
+          <option value="SUPPORT_AGENT">Support</option>
+          <option value="USER">User</option>
         </select>
         <div className="modal-actions">
           <button onClick={onClose} className="btn-cancel">Cancel</button>
