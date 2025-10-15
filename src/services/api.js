@@ -17,6 +17,8 @@ class TicketAPI {
         body: JSON.stringify({
           pageNumber: 1,
           pageSize: 10,
+          totalElements: 2,
+          totalPages: 1
         }),
       });
 
@@ -37,6 +39,7 @@ class TicketAPI {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+           Authorization: `Bearer ${Cookies.get("jwtToken")}`,
         },
       });
 
@@ -57,6 +60,7 @@ class TicketAPI {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+           Authorization: `Bearer ${Cookies.get("jwtToken")}`
         },
         body: JSON.stringify(ticketData),
       });
