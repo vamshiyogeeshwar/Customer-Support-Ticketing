@@ -8,6 +8,7 @@ export const registerUser = async (name, email, password) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ name, email, password }),
+    credentials: "include",
   });
 
   if (!response.ok) {
@@ -26,6 +27,7 @@ export const loginUser = async (email, password) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ email, password }),
+    credentials:"include",
   });
 
   if (!response.ok) {
@@ -34,7 +36,7 @@ export const loginUser = async (email, password) => {
   }
 
   const data = await response.json();
-  localStorage.setItem("token", data.token); // Save JWT
+  // localStorage.setItem("token", data.token); // Save JWT
   return data;
 };
 
