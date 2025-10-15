@@ -1,3 +1,109 @@
+
+
+//code taken from support file
+import React, { useEffect, useState } from 'react';
+import './UsersPage.css';
+import { Edit, Trash2 } from 'lucide-react';
+import Sidebar3 from '../../components/Sidebar3/Sidebar3';
+import UserModal from '../../components/UserModal/UserModal';
+import UserAPI from '../../services/UserAPI';
+
+const UsersPage = ({ activeTab, setActiveTab }) => {
+  const [users, setUsers] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [userToEdit, setUserToEdit] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await UserAPI.getAllUsers();
+      console.log(data)
+      setUsers(data.data.userDtos);
+    };
+    fetchData();
+  }, []);
+
+  const handleAdd = () => {
+    setUserToEdit(null);
+    setModalOpen(true);
+  };
+
+  const handleEdit = (user) => {
+    setUserToEdit(user);
+    setModalOpen(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this user?')) {
+      await UserAPI.deleteUser(id);
+      setUsers(users.filter((u) => u.id !== id));
+    }
+  };
+
+  const handleSave = async (userData) => {
+    if (userToEdit) {
+      await UserAPI.updateUser(userData);
+      setUsers(users.map((u) => (u.id === userData.id ? userData : u)));
+    } else {
+      await UserAPI.saveUser(userData);
+      setUsers([...users, userData]);
+    }
+    setModalOpen(false);
+  };
+
+  return (
+    <div className="users-layout">
+      <Sidebar3 activeTab={activeTab} setActiveTab={setActiveTab} />
+      <div className="users-main">
+        <div className="users-header">
+          <h1>Users</h1>
+          <button className="add-btn" onClick={handleAdd}>+ Add User</button>
+        </div>
+
+        <table className="users-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user.id}>
+                <td>{user.id}</td>
+                <td>{user.name}</td>
+                <td>{user.email}</td>
+                <td>{user.role}</td>
+                <td className="actions">
+                  <Edit className="icon edit" onClick={() => handleEdit(user)} />
+                  <Trash2 className="icon delete" onClick={() => handleDelete(user.id)} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {modalOpen && (
+          <UserModal
+            isOpen={modalOpen}
+            onClose={() => setModalOpen(false)}
+            onSave={handleSave}
+            userToEdit={userToEdit}
+          />
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default UsersPage;
+
+
+
+
+
 // import React, { useState } from 'react';
 // import Sidebar3 from '../../components/Sidebar3/Sidebar3';
 // import './User.css';
@@ -501,103 +607,3 @@
 
 
 
-
-
-//code taken from support file
-import React, { useEffect, useState } from 'react';
-import './UsersPage.css';
-import { Edit, Trash2 } from 'lucide-react';
-import Sidebar3 from '../../components/Sidebar3/Sidebar3';
-import UserModal from '../../components/UserModal/UserModal';
-import UserAPI from '../../services/UserAPI';
-
-const UsersPage = ({ activeTab, setActiveTab }) => {
-  const [users, setUsers] = useState([]);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [userToEdit, setUserToEdit] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await UserAPI.getAllUsers();
-      setUsers(data);
-    };
-    fetchData();
-  }, []);
-
-  const handleAdd = () => {
-    setUserToEdit(null);
-    setModalOpen(true);
-  };
-
-  const handleEdit = (user) => {
-    setUserToEdit(user);
-    setModalOpen(true);
-  };
-
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
-      await UserAPI.deleteUser(id);
-      setUsers(users.filter((u) => u.id !== id));
-    }
-  };
-
-  const handleSave = async (userData) => {
-    if (userToEdit) {
-      await UserAPI.updateUser(userData);
-      setUsers(users.map((u) => (u.id === userData.id ? userData : u)));
-    } else {
-      await UserAPI.saveUser(userData);
-      setUsers([...users, userData]);
-    }
-    setModalOpen(false);
-  };
-
-  return (
-    <div className="users-layout">
-      <Sidebar3 activeTab={activeTab} setActiveTab={setActiveTab} />
-      <div className="users-main">
-        <div className="users-header">
-          <h1>Users</h1>
-          <button className="add-btn" onClick={handleAdd}>+ Add User</button>
-        </div>
-
-        <table className="users-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id}>
-                <td>{user.id}</td>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>{user.role}</td>
-                <td className="actions">
-                  <Edit className="icon edit" onClick={() => handleEdit(user)} />
-                  <Trash2 className="icon delete" onClick={() => handleDelete(user.id)} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {modalOpen && (
-          <UserModal
-            isOpen={modalOpen}
-            onClose={() => setModalOpen(false)}
-            onSave={handleSave}
-            userToEdit={userToEdit}
-          />
-        )}
-      </div>
-    </div>
-  );
-};
-
-export default UsersPage;
