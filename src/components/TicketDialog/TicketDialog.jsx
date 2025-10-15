@@ -6,7 +6,7 @@ import ReactDOM from "react-dom";
 import "./TicketDialog.css";
 import ticketAPI from "../../services/api";
 
-const TicketDialogContent = ({ ticket, onClose, onTicketUpdated }) => {
+const TicketDialogContent = ({ ticket, onClose, onTicketUpdated , userRole}) => {
   const [comment, setComment] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [updatedTicket, setUpdatedTicket] = useState(ticket || {});
@@ -36,36 +36,36 @@ const TicketDialogContent = ({ ticket, onClose, onTicketUpdated }) => {
     }
   };
 
-  const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this ticket?")) return;
-    setLoading(true);
-    try {
-      // If your API method is named deleteTicket
-      await ticketAPI.deleteTicket(ticket.id);
-      onTicketUpdated();
-      onClose();
-    } catch (err) {
-      console.error(err);
-      alert("Failed to delete ticket.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const handleDelete = async () => {
+  //   if (!window.confirm("Are you sure you want to delete this ticket?")) return;
+  //   setLoading(true);
+  //   try {
+  //     // If your API method is named deleteTicket
+  //     await ticketAPI.deleteTicket(ticket.id);
+  //     onTicketUpdated();
+  //     onClose();
+  //   } catch (err) {
+  //     console.error(err);
+  //     alert("Failed to delete ticket.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  const handleAddComment = async () => {
-    if (!comment.trim()) return alert("Please enter a comment.");
-    setLoading(true);
-    try {
-      await ticketAPI.addComment(ticket.id, { text: comment });
-      setComment("");
-      // optionally refresh comments or ticket
-    } catch (err) {
-      console.error(err);
-      alert("Failed to add comment.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const handleAddComment = async () => {
+  //   if (!comment.trim()) return alert("Please enter a comment.");
+  //   setLoading(true);
+  //   try {
+  //     await ticketAPI.addComment(ticket.id, { text: comment });
+  //     setComment("");
+  //     // optionally refresh comments or ticket
+  //   } catch (err) {
+  //     console.error(err);
+  //     alert("Failed to add comment.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <div className="ticket-dialog-overlay" onClick={onClose}>
@@ -103,22 +103,20 @@ const TicketDialogContent = ({ ticket, onClose, onTicketUpdated }) => {
         <div className="dialog-footer">
           {isEditing ? (
             <>
-              <button className="save-btn" onClick={handleUpdate} disabled={loading}>{loading ? 'Saving...' : 'Save'}</button>
-              <button className="cancel-btn" onClick={() => setIsEditing(false)}>Cancel</button>
-            </>
+               <button onClick={handleUpdate} disabled={loading}>{loading ? 'Saving...' : 'Save'}</button> </>
           ) : (
             <>
-              <button className="edit-btn" onClick={() => setIsEditing(true)}>Edit</button>
-              <button className="delete-btn" onClick={handleDelete}>Delete</button>
+             {userRole === "USER" && <button onClick={() => setIsEditing(true)}>Edit</button>}
             </>
           )}
         </div>
+        
 
-        <div className="comment-section">
+        {/* <div className="comment-section">
           <h4>Add Comment</h4>
           <textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Write your comment..." />
           <button className="comment-btn" onClick={handleAddComment} disabled={loading}>{loading ? 'Submitting...' : 'Submit Comment'}</button>
-        </div>
+        </div> */}
       </div>
     </div>
   );
