@@ -24,7 +24,7 @@ const TicketFilters3 = ({ activeFilter, setActiveFilter, searchQuery, setSearchQ
       </div>
       
       <div className="filter-actions">
-        <div className="search-container">
+        <div className="search-container"> 
           <input
             type="text"
             className="search-input"
