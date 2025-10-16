@@ -200,7 +200,7 @@ const KnowledgeManagement = ({ activePage, setActivePage }) => {
             onClose={() => setPreviewArticle(null)}
           />
         )}
-      </div>
+      </div> 
     </div>
   );
 };
