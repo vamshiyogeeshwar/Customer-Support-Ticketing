@@ -54,7 +54,7 @@ const TicketTable = ({ tickets, onTicketClick }) => {
                   aria-label="ticket actions"
                 >
                   ⋮
-                </button>
+                </button> 
               </td>
             </tr>
           ))}
