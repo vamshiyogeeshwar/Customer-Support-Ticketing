@@ -65,7 +65,7 @@ const CreateTicketModal3 = ({ onClose, onTicketCreated }) => {
               Cancel
             </button>
             <button type="submit" className="submit-btn" disabled={loading}>
-              {loading ? "Creating..." : "Submit"}
+              {loading ? "Creating..." : "Submit"} 
             </button>
           </div>
         </form>
