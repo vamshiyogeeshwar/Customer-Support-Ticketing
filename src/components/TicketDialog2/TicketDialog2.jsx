@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import "./TicketDialog2.css";
 import ticketAPI from "../../services/api";
+import Cookies  from "js-cookie";
 
 const TicketDialogContent = ({ ticket, onClose, onTicketUpdated }) => {
   const [comment, setComment] = useState("");
@@ -27,7 +28,7 @@ const TicketDialogContent = ({ ticket, onClose, onTicketUpdated }) => {
     try {
       await ticketAPI.updateTicket(updatedTicket);
       onTicketUpdated();
-      onClose();
+      setIsEditing(false);
     } catch (err) {
       console.error(err);
       alert("Failed to update ticket.");
@@ -56,8 +57,32 @@ const TicketDialogContent = ({ ticket, onClose, onTicketUpdated }) => {
     if (!comment.trim()) return alert("Please enter a comment.");
     setLoading(true);
     try {
-      await ticketAPI.addComment(ticket.id, { text: comment });
+       const currentUser = {
+        id: parseInt(Cookies.get("userId")),
+        name: Cookies.get("userName"),
+        email: Cookies.get("userEmail"),
+        role: Cookies.get("userRole")
+      };
+
+      const newComment = {
+        userId: currentUser.id,
+        userName: currentUser.name,
+        userEmail: currentUser.email,
+        userRole: currentUser.role,
+        body: comment
+      };
+
+      const addedComment = await ticketAPI.addComment(ticket.id, newComment);
+
+      // Update local ticket comments
+      setUpdatedTicket({
+        ...updatedTicket,
+        comments: [...(updatedTicket.comments || []), addedComment.data]
+      });
+
       setComment("");
+      // await ticketAPI.addComment(ticket.id, { text: comment });
+      // setComment("");
       // optionally refresh comments or ticket
     } catch (err) {
       console.error(err);
@@ -81,7 +106,7 @@ const TicketDialogContent = ({ ticket, onClose, onTicketUpdated }) => {
               <label>Subject:</label>
               <input type="text" name="subject" value={updatedTicket.subject || ''} onChange={handleInputChange} />
               <label>Status:</label>
-              <input type="text" name="status1" value={updatedTicket.status1 || ''} onChange={handleInputChange} />
+              <input type="text" name="status1" value={updatedTicket.status || ''} onChange={handleInputChange} />
               <label>Priority:</label>
               <input type="text" name="priority" value={updatedTicket.priority || ''} onChange={handleInputChange} />
               <label>Assignee:</label>
@@ -91,11 +116,19 @@ const TicketDialogContent = ({ ticket, onClose, onTicketUpdated }) => {
             <>
               <p><strong>ID:</strong> {ticket.id}</p>
               <p><strong>Subject:</strong> {ticket.subject}</p>
-              <p><strong>Status:</strong> {ticket.status1}</p>
+              <p><strong>Status:</strong> {ticket.status}</p>
               <p><strong>Priority:</strong> {ticket.priority}</p>
-              <p><strong>Assignee:</strong> {ticket.assignee}</p>
+              <p><strong>Assignee:</strong> {updatedTicket.assignee?.name || '-'}</p>
               <p><strong>Created At:</strong> {ticket.createdAt}</p>
               <p><strong>Updated At:</strong> {ticket.updatedAt}</p>
+
+<h4>Comments</h4>
+              <ul>
+                {(updatedTicket.comments || []).map(c => (
+                  <li key={c.id}><strong>{c.user?.name}:</strong> {c.body}</li>
+                ))}
+              </ul>
+
             </>
           )}
         </div>
