@@ -120,7 +120,7 @@ const TicketDialogContent = ({ ticket, onClose, onTicketUpdated , userRole}) => 
       </div>
     </div>
   );
-};
+}; 
 
 const TicketDialog = (props) => {
   if (typeof document === 'undefined') return null;
