@@ -1,19 +1,19 @@
 
 //code with create ticket button and editable functionlity
-import React, { useState, useEffect } from 'react';
-import Sidebar from '../../components/Sidebar/Sidebar';
-import TicketFilters from '../../components/TicketFilters/TicketFilters';
-import TicketTable from '../../components/TicketTable/TicketTable';
-import ticketAPI from '../../services/api';
-import CreateTicketModal from '../../components/CreateTicketModal/CreateTicketModal';
+import React, { useState, useEffect } from "react";
+import Sidebar from "../../components/Sidebar/Sidebar";
+import TicketFilters from "../../components/TicketFilters/TicketFilters";
+import TicketTable from "../../components/TicketTable/TicketTable";
+import ticketAPI from "../../services/api";
+import CreateTicketModal from "../../components/CreateTicketModal/CreateTicketModal";
 import TicketDialog from "../../components/TicketDialog/TicketDialog";
 
-import './SupportPage3.css';
+import "./SupportPage3.css";
 
 const SupportPage3 = ({ activePage, setActivePage }) => {
-  const activeTab = 'tickets';
-  const [activeFilter, setActiveFilter] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const activeTab = "tickets";
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [tickets, setTickets] = useState([]);
   const [filteredTickets, setFilteredTickets] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -32,11 +32,21 @@ const SupportPage3 = ({ activePage, setActivePage }) => {
   const fetchTickets = async () => {
     setLoading(true);
     try {
-      const data = await ticketAPI.getTickets();
-      setTickets(data || []);
-      setFilteredTickets(data || []);
+      // const data = await ticketAPI.getTickets();
+      // setTickets(data || []);
+      // setFilteredTickets(data || []);
+      const response = await ticketAPI.getTickets();
+      console.log("Tickets API response:", response);
+
+      const ticketList =
+        response?.data?.tickets || // if wrapped inside "data"
+        response?.tickets || // if directly inside response
+        [];
+
+      setTickets(ticketList);
+      setFilteredTickets(ticketList);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching Tickets:",err);
       setTickets([]);
       setFilteredTickets([]);
     } finally {
@@ -77,7 +87,7 @@ const SupportPage3 = ({ activePage, setActivePage }) => {
     //   const fullTicket = await ticketAPI.getTicketById(ticket.id);
     //   console.log('getTicketById returned:', fullTicket);
     //   const ticketObj = fullTicket?.data ?? fullTicket ?? ticket;
-      setSelectedTicket(ticket);
+    setSelectedTicket(ticket);
     // } catch (error) {
     //   console.error('Failed to fetch ticket details (API). Falling back to the row data.', error);
     //   setSelectedTicket(ticket);
@@ -97,7 +107,9 @@ const SupportPage3 = ({ activePage, setActivePage }) => {
       <Sidebar activeTab={activePage} setActiveTab={setActivePage} />
 
       <div className="main-content">
-        <div className="page-header"><h1>Tickets</h1></div>
+        <div className="page-header">
+          <h1>Tickets</h1>
+        </div>
 
         <TicketFilters
           activeFilter={activeFilter}
@@ -114,10 +126,16 @@ const SupportPage3 = ({ activePage, setActivePage }) => {
           <div className="loading">Loading tickets...</div>
         ) : (
           <>
-            <TicketTable tickets={filteredTickets} onTicketClick={handleTicketClick} />
+            <TicketTable
+              tickets={filteredTickets}
+              onTicketClick={handleTicketClick}
+            />
 
             {showCreateModal && (
-              <CreateTicketModal onClose={() => setShowCreateModal(false)} onTicketCreated={handleTicketCreated} />
+              <CreateTicketModal
+                onClose={() => setShowCreateModal(false)}
+                onTicketCreated={handleTicketCreated}
+              />
             )}
 
             {selectedTicket && (
@@ -125,20 +143,46 @@ const SupportPage3 = ({ activePage, setActivePage }) => {
                 ticket={selectedTicket}
                 onClose={() => setSelectedTicket(null)}
                 onTicketUpdated={fetchTickets}
-                userRole = "USER"
+                userRole="USER"
               />
             )}
 
-            <div className="pagination">
-              <button className="pagination-btn" disabled={currentPage === 1} onClick={() => setCurrentPage((p) => p - 1)}>Previous</button>
+            {/* <div className="pagination">
+              <button
+                className="pagination-btn"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((p) => p - 1)}
+              >
+                Previous
+              </button>
               <div className="pagination-numbers">
-                <button className={`page-number ${currentPage === 1 ? 'active' : ''}`} onClick={() => setCurrentPage(1)}>1</button>
-                <button className={`page-number ${currentPage === 2 ? 'active' : ''}`} onClick={() => setCurrentPage(2)}>2</button>
-                <button className={`page-number ${currentPage === 3 ? 'active' : ''}`} onClick={() => setCurrentPage(3)}>3</button>
+                <button
+                  className={`page-number ${currentPage === 1 ? "active" : ""}`}
+                  onClick={() => setCurrentPage(1)}
+                >
+                  1
+                </button>
+                <button
+                  className={`page-number ${currentPage === 2 ? "active" : ""}`}
+                  onClick={() => setCurrentPage(2)}
+                >
+                  2
+                </button>
+                <button
+                  className={`page-number ${currentPage === 3 ? "active" : ""}`}
+                  onClick={() => setCurrentPage(3)}
+                >
+                  3
+                </button>
               </div>
-              <button className="pagination-btn" onClick={() => setCurrentPage((p) => p + 1)}>Next</button>
+              <button
+                className="pagination-btn"
+                onClick={() => setCurrentPage((p) => p + 1)}
+              >
+                Next
+              </button>
               <button className="pagination-menu">⋮</button>
-            </div>
+            </div> */}
           </>
         )}
       </div>
@@ -147,7 +191,6 @@ const SupportPage3 = ({ activePage, setActivePage }) => {
 };
 
 export default SupportPage3;
-
 
 // // code with only create ticket button
 // import React, { useState, useEffect } from 'react';
