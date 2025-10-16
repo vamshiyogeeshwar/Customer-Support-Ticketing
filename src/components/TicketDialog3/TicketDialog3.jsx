@@ -112,7 +112,7 @@ const TicketDialogContent = ({ ticket, onClose, onTicketUpdated }) => {
               <button className="delete-btn" onClick={handleDelete}>Delete</button>
             </>
           )}
-        </div>
+        </div> 
 
         <div className="comment-section">
           <h4>Add Comment</h4>
