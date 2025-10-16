@@ -15,9 +15,9 @@ const UserAPI = {
       body: JSON.stringify({
         pageNumber: 0,
         pageSize: 10,
-        totalElements: 3,
-        totalPages: 1,
-        last: true,
+        // totalElements: 3,
+        // totalPages: 1,
+        // last: true,
       }),
     });
     return response.json();
