@@ -60,7 +60,7 @@ const CreateTicketModal = ({ onClose, onTicketCreated }) => {
 
           {error && <p className="error">{error}</p>}
 
-          <div className="modal-actions">
+          <div className="modal-actions"> 
             <button type="button" className="cancel-btn" onClick={onClose}>
               Cancel
             </button>
