@@ -39,7 +39,7 @@ const TicketTable3 = ({ tickets, onTicketClick }) => {
               onClick={() => onTicketClick(ticket)}
               onKeyDown={(e) => { if (e.key === 'Enter') onTicketClick(ticket); }}
             >
-              <td className="subject-cell">{ticket.subject}</td>
+              <td className="subject-cell">{ticket.subject}</td> 
               {/* <td><span className={`status-badge ${getStatusClass(ticket.status1)}`}>{ticket.status1}</span></td> */}
               <td className="priority-cell">{ticket.priority}</td>
               <td className="assignee-cell">{ticket.assignee}</td>
