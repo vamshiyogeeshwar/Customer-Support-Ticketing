@@ -189,7 +189,7 @@
   cursor: not-allowed;
 }
 
-/* Responsive */
+/* Responsive */ 
 @media (max-width: 600px) {
   .ticket-dialog {
     width: 90%;
