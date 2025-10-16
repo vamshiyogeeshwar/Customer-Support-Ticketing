@@ -1,12 +1,12 @@
 
 
 //code taken from support file
-import React, { useEffect, useState } from 'react';
-import './UsersPage.css';
-import { Edit, Trash2 } from 'lucide-react';
-import Sidebar3 from '../../components/Sidebar3/Sidebar3';
-import UserModal from '../../components/UserModal/UserModal';
-import UserAPI from '../../services/UserAPI';
+import React, { useEffect, useState } from "react";
+import "./UsersPage.css";
+import { Edit, Trash2 } from "lucide-react";
+import Sidebar3 from "../../components/Sidebar3/Sidebar3";
+import UserModal from "../../components/UserModal/UserModal";
+import UserAPI from "../../services/UserAPI";
 
 const UsersPage = ({ activeTab, setActiveTab }) => {
   const [users, setUsers] = useState([]);
@@ -16,7 +16,7 @@ const UsersPage = ({ activeTab, setActiveTab }) => {
   useEffect(() => {
     const fetchData = async () => {
       const data = await UserAPI.getAllUsers();
-      console.log(data)
+      console.log(data);
       setUsers(data.data.userDtos);
     };
     fetchData();
@@ -33,20 +33,55 @@ const UsersPage = ({ activeTab, setActiveTab }) => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
+    if (window.confirm("Are you sure you want to delete this user?")) {
       await UserAPI.deleteUser(id);
       setUsers(users.filter((u) => u.id !== id));
     }
   };
 
+  // const handleSave = async (userData) => {
+  //   const formattedUser = {
+  //     ...userData,
+  //     role: userData.role.toUpperCase(),
+  //   };
+  //   if (userToEdit) {
+  //     await UserAPI.updateUser(formattedUser);
+  //     setUsers(users.map((u) => (u.id === userData.id ? formattedUser : u)));
+  //   } else {
+  //     await UserAPI.saveUser(formattedUser);
+  //     setUsers([...users, formattedUser]);
+  //   }
+  //   setModalOpen(false);
+  // };
+
   const handleSave = async (userData) => {
-    if (userToEdit) {
-      await UserAPI.updateUser(userData);
-      setUsers(users.map((u) => (u.id === userData.id ? userData : u)));
-    } else {
-      await UserAPI.saveUser(userData);
-      setUsers([...users, userData]);
+    const formattedUser = {
+      ...userData,
+      role: userData.role.toUpperCase(),
+    };
+
+    try {
+      if (userToEdit) {
+        const response = await UserAPI.updateUser(formattedUser);
+        // Use backend response
+        if (response?.data?.data) {
+          setUsers(
+            users.map((u) =>
+              u.id === response.data.data.id ? response.data.data : u
+            )
+          );
+        }
+      } else {
+        const response = await UserAPI.saveUser(formattedUser);
+        // ✅ Use backend response data
+        if (response?.data?.data) {
+          setUsers([...users, response.data.data]);
+        }
+      }
+    } catch (error) {
+      console.error("Error saving user:", error);
     }
+
     setModalOpen(false);
   };
 
@@ -56,7 +91,9 @@ const UsersPage = ({ activeTab, setActiveTab }) => {
       <div className="users-main">
         <div className="users-header">
           <h1>Users</h1>
-          <button className="add-btn" onClick={handleAdd}>+ Add User</button>
+          <button className="add-btn" onClick={handleAdd}>
+            + Add User
+          </button>
         </div>
 
         <table className="users-table">
@@ -77,8 +114,14 @@ const UsersPage = ({ activeTab, setActiveTab }) => {
                 <td>{user.email}</td>
                 <td>{user.role}</td>
                 <td className="actions">
-                  <Edit className="icon edit" onClick={() => handleEdit(user)} />
-                  <Trash2 className="icon delete" onClick={() => handleDelete(user.id)} />
+                  <Edit
+                    className="icon edit"
+                    onClick={() => handleEdit(user)}
+                  />
+                  <Trash2
+                    className="icon delete"
+                    onClick={() => handleDelete(user.id)}
+                  />
                 </td>
               </tr>
             ))}
