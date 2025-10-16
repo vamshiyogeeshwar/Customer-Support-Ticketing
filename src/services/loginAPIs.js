@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 const API_BASE_URL = "http://team-env.eba-mghaptds.ap-south-1.elasticbeanstalk.com"; // 🔹 Replace with your backend URL
 
 // ✅ Register new user
@@ -6,6 +7,7 @@ export const registerUser = async (name, email, password) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${Cookies.get("jwtToken")}`
     },
     body: JSON.stringify({ name, email, password }),
     credentials: "include",
@@ -25,6 +27,7 @@ export const loginUser = async (email, password) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${Cookies.get("jwtToken")}`
     },
     body: JSON.stringify({ email, password }),
     credentials:"include",
