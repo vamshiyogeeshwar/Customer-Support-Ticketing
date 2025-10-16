@@ -1,4 +1,7 @@
 
+
+
+
 // src/components/UserModal/UserModal.jsx
 import React, { useState, useEffect } from 'react';
 import './UserModal.css';
@@ -19,7 +22,11 @@ const UserModal = ({ isOpen, onClose, onSave, userToEdit }) => {
   };
 
   const handleSubmit = () => {
-    onSave(formData);
+    const formattedData = {
+      ...formData,
+      role: formData.role.toUpperCase(),
+    };
+    onSave(formattedData);
   };
 
   if (!isOpen) return null;
