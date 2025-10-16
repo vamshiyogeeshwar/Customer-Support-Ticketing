@@ -1,9 +1,10 @@
 
 //final code of knowledge base for the supportpage
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import { Search, Edit, Trash2, X } from 'lucide-react';
 import './KnowledgeManagement3.css';
 import Sidebar from '../../components/Sidebar/Sidebar';
+import KnowledgeAPI from '../../services/KnowledgeAPI';
 
 // ---------------- Article Preview Modal ----------------
 const ArticlePreview = ({ article, onClose }) => {
@@ -47,6 +48,13 @@ const ArticleTable = ({ articles, onEdit, onDelete, onPreview, searchQuery }) =>
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedArticles = filteredArticles.slice(startIndex, startIndex + itemsPerPage);
 
+
+   // Handle clicking on page numbers
+  const goToPage = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+
   return (
     <div className="table-container">
       <div className="table-wrapper">
@@ -64,16 +72,13 @@ const ArticleTable = ({ articles, onEdit, onDelete, onPreview, searchQuery }) =>
           </thead>
           <tbody>
             {paginatedArticles.map((article, index) => (
-              <tr key={article.id}>
-                <td onClick={() => onPreview(article)}>{startIndex + index + 1}</td>
-                <td className="td-title" onClick={() => onPreview(article)}>{article.id}</td>
-                <td onClick={() => onPreview(article)}>
-                  <div className="content-title">{article.title}</div>
-                  <div className="content-desc">{article.content}</div>
-                </td>
-                <td onClick={() => onPreview(article)}>{article.category}</td>
-                <td onClick={() => onPreview(article)}>{article.createdAt}</td>
-                <td onClick={() => onPreview(article)}>{article.updatedAt}</td>
+              <tr key={article.id} onClick={() => onPreview(article)} style={{ cursor: 'pointer' }}>
+                <td>{startIndex + index + 1}</td>
+                <td>{article.title}</td>
+                <td>{article.content}</td>
+                <td>{article.category}</td>
+                <td>{article.createdAt}</td>
+                <td>{article.updatedAt}</td>
                 {/* <td>
                   <div className="action-buttons">
                     <button onClick={() => onEdit(article)} className="btn-edit">
@@ -104,7 +109,7 @@ const ArticleTable = ({ articles, onEdit, onDelete, onPreview, searchQuery }) =>
             {[...Array(totalPages)].map((_, i) => (
               <button
                 key={i}
-                onClick={() => setCurrentPage(i + 1)}
+                onClick={() => goToPage(i + 1)}
                 className={`pagination-number ${currentPage === i + 1 ? 'active' : ''}`}
               >
                 {i + 1}
@@ -127,61 +132,36 @@ const ArticleTable = ({ articles, onEdit, onDelete, onPreview, searchQuery }) =>
 
 // ---------------- Main Knowledge Page ----------------
 const KnowledgeManagement3 = ({ activePage, setActivePage }) => {
-  const [articles, setArticles] = useState([
-    {
-      id: 'KB-001',
-      title: 'Troubleshooting Login Issues',
-      content: 'Steps to resolve common user login problems...',
-      category: 'Technical Support',
-      createdAt: '2023-10-26',
-      updatedAt: '2023-11-01'
-    },
-    {
-      id: 'KB-002',
-      title: 'Frequently asked questions about payments...',
-      content: 'Frequently asked questions about payments...',
-      category: 'Billing',
-      createdAt: '2023-10-27',
-      updatedAt: '2023-11-07'
-    },
-    {
-      id: 'KB-003',
-      title: 'Billing & Subscription FAQs for new users...',
-      content: 'Billing & Subscription FAQs for new users...',
-      category: 'Billing',
-      createdAt: '2023-10-27',
-      updatedAt: '2023-11-05'
-    },
-    {
-      id: 'KB-004',
-      title: 'Product Onboarding Guide',
-      content: 'Documentation for integrating with our API',
-      category: 'Getting Started',
-      createdAt: '2023-10-28',
-      updatedAt: '2023-11-05'
-    },
-    {
-      id: 'KB-005',
-      title: 'API Integration Docs',
-      content: 'API Integration Docs',
-      category: 'Developer',
-      createdAt: '2023-10-30',
-      updatedAt: '2023-11-03'
-    }
-  ]);
-
+  const [articles, setArticles] = useState([]);
+ const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [previewArticle, setPreviewArticle] = useState(null);
 
-  const handleEdit = (article) => {
-    alert(`Edit functionality for ${article.title} is not implemented`);
-  };
+  // const handleEdit = (article) => {
+  //   alert(`Edit functionality for ${article.title} is not implemented`);
+  // };
 
-  const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this article?')) {
-      setArticles(articles.filter((a) => a.id !== id));
-    }
-  };
+  // const handleDelete = (id) => {
+  //   if (window.confirm('Are you sure you want to delete this article?')) {
+  //     setArticles(articles.filter((a) => a.id !== id));
+  //   }
+  // };
+
+  useEffect(() => {
+    const fetchArticles = async () => {
+      setLoading(true);
+      try {
+        const data = await KnowledgeAPI.getAllArticles();
+        setArticles(data);
+      } catch (error) {
+        console.error('Error fetching articles:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchArticles();
+  }, []);
+
 
   return (
     <div className="tickets-page">
@@ -204,13 +184,15 @@ const KnowledgeManagement3 = ({ activePage, setActivePage }) => {
           </div>
         </div>
 
-        <ArticleTable
-          articles={articles}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onPreview={(article) => setPreviewArticle(article)}
-          searchQuery={searchQuery}
-        />
+        {loading ? (
+          <div className="loading">Loading articles...</div>
+        ) : (
+          <ArticleTable
+            articles={articles}
+            onPreview={(article) => setPreviewArticle(article)}
+            searchQuery={searchQuery}
+          />
+        )}
 
         {previewArticle && (
           <ArticlePreview
@@ -224,6 +206,7 @@ const KnowledgeManagement3 = ({ activePage, setActivePage }) => {
 };
 
 export default KnowledgeManagement3;
+
 
 
 
