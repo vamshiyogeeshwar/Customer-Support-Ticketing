@@ -420,15 +420,12 @@
 
 
 
-
-
-
-//code taken from support file
+// ✅ SupportPage1.jsx
 import React, { useState, useEffect } from 'react';
 import Sidebar3 from '../../components/Sidebar3/Sidebar3';
 import TicketFilters2 from '../../components/TicketFilters2/TicketFilters2';
 import TicketTable2 from '../../components/TicketTable2/TicketTable2';
-import ticketAPI from '../../services/api';
+import TicketAPI from '../../services/api'; // ✅ Ensure this matches your import name
 import CreateTicketModal2 from '../../components/CreateTicketModal2/CreateTicketModal2';
 import TicketDialog2 from "../../components/TicketDialog2/TicketDialog2";
 
@@ -437,33 +434,38 @@ import './SupportPage1.css';
 const SupportPage1 = ({ activePage, setActivePage }) => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [tickets, setTickets] = useState([]);
+  const [tickets, setTickets] = useState([]); // ✅ default to empty array
   const [filteredTickets, setFilteredTickets] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);
 
-  // 🔹 Fetch tickets from backend
-  const fetchTickets = async () => {
-    setLoading(true);
-    try {
-      const data = await ticketAPI.getTickets();
-      setTickets(data);
-    } catch (error) {
-      console.error('❌ Failed to fetch tickets:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Load tickets on mount
+  // ✅ Corrected ticket fetching logic
   useEffect(() => {
+    const fetchTickets = async () => {
+      setLoading(true);
+      try {
+        const res = await TicketAPI.getTickets();
+
+        // ✅ Extract the correct array from backend response
+        const fetchedTickets = res?.data?.ticketDtos || [];
+
+        console.log("✅ Fetched tickets:", fetchedTickets);
+        setTickets(fetchedTickets);
+      } catch (error) {
+        console.error("❌ Error fetching tickets:", error);
+        setTickets([]); // fallback to empty array
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchTickets();
   }, []);
 
-  // Apply filters + search
+  // ✅ Apply filters and search
   useEffect(() => {
-    let filtered = [...tickets];
+    let filtered = Array.isArray(tickets) ? [...tickets] : [];
 
     if (activeFilter !== 'all') {
       filtered = filtered.filter(
@@ -483,20 +485,22 @@ const SupportPage1 = ({ activePage, setActivePage }) => {
     setFilteredTickets(filtered);
   }, [activeFilter, searchQuery, tickets]);
 
-  // Open create modal
+  // ✅ Open create modal
   const handleCreateTicket = () => {
     setShowCreateModal(true);
   };
 
-  // Refresh after creating
+  // ✅ Refresh after creating
   const handleTicketCreated = async () => {
-    await fetchTickets();
+    const res = await TicketAPI.getTickets();
+    const fetchedTickets = res?.data?.ticketDtos || [];
+    setTickets(fetchedTickets);
   };
 
-  // Open detailed dialog for selected ticket
+  // ✅ Open ticket details
   const handleTicketClick = async (ticket) => {
     try {
-      const fullTicket = await ticketAPI.getTicketById(ticket.id);
+      const fullTicket = await TicketAPI.getTicketById(ticket.id);
       const ticketObj = fullTicket?.data ?? fullTicket ?? ticket;
       setSelectedTicket(ticketObj);
     } catch (error) {
@@ -526,6 +530,7 @@ const SupportPage1 = ({ activePage, setActivePage }) => {
           <div className="loading">Loading tickets...</div>
         ) : (
           <>
+            {/* ✅ Pass tickets safely */}
             <TicketTable2
               tickets={filteredTickets}
               onTicketClick={handleTicketClick}
@@ -542,7 +547,7 @@ const SupportPage1 = ({ activePage, setActivePage }) => {
               <TicketDialog2
                 ticket={selectedTicket}
                 onClose={() => setSelectedTicket(null)}
-                onTicketUpdated={fetchTickets}
+                onTicketUpdated={handleTicketCreated}
               />
             )}
           </>
