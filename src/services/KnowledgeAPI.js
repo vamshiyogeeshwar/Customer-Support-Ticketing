@@ -120,7 +120,7 @@ const KnowledgeAPI = {
   },
 
   // 🔹 Get KB Article by ID
-  async getArticleById(id) {
+  async getArticleById(id) { 
     try {
       const response = await fetch(`${API_BASE_URL}/api/kb/gtkbid/${id}`, {
         method: "GET",
