@@ -3,10 +3,10 @@ import './TicketFilters.css';
 
 const TicketFilters = ({ activeFilter, setActiveFilter, searchQuery, setSearchQuery, onCreateTicket }) => {
   const filters = [
-    { id: 'all', label: 'All' },
-    { id: 'open', label: 'Open' },
-    { id: 'pending', label: 'Pending' },
-    { id: 'closed', label: 'Closed' },
+    // { id: 'all', label: 'All' },
+    // { id: 'open', label: 'Open' },
+    // { id: 'pending', label: 'Pending' },
+    // { id: 'closed', label: 'Closed' },
   ];
 
   return (
