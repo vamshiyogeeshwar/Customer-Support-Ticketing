@@ -54,7 +54,7 @@ const UserTable = () => {
               <td>
                 <div className="action-buttons">
                   {user.id !== 1 && (
-                    <>
+                    <> 
                       <button className="action-btn">Edit</button>
                       <button className="icon-btn"><ArrowLeft size={16} /></button>
                       <button className="icon-btn"><Trash2 size={16} /></button>
